@@ -1,0 +1,15 @@
+{
+  "name": "cross-taper-calendar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turns a prescriber's chosen medication switch plan into a printable day-by-day patient calendar.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "serve": "node scripts/serve.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
