@@ -256,8 +256,11 @@ function checkCurrentDoses(drug, p, timesOk, errors) {
   for (const key of Object.keys(drug.currentDoses)) {
     const value = drug.currentDoses[key];
     const keyOk = !timesOk || drug.times.includes(key);
-    if (!keyOk || !isValidDose(value)) {
-      errors.push(issue('CURRENT_DOSES_INVALID', `${path}.${key}`, `"${key}" is not a time of this drug, or its dose is not valid.`));
+    if (!keyOk) {
+      errors.push(issue('CURRENT_DOSES_INVALID', `${path}.${key}`, `"${key}" is not one of this drug's times.`));
+      valid = false;
+    } else if (!isValidDose(value)) {
+      errors.push(issue('CURRENT_DOSES_INVALID', `${path}.${key}`, doseMessage()));
       valid = false;
     }
   }
@@ -305,8 +308,11 @@ function checkSteps(steps, p, times, errors) {
     for (const key of Object.keys(step.doses)) {
       const value = step.doses[key];
       const keyOk = times === null || times.includes(key);
-      if (!keyOk || !isValidDose(value)) {
-        errors.push(issue('STEPS_INVALID', `${sp}.doses.${key}`, `"${key}" is not a time of this drug, or its dose is not valid.`));
+      if (!keyOk) {
+        errors.push(issue('STEPS_INVALID', `${sp}.doses.${key}`, `"${key}" is not one of this drug's times.`));
+        valid = false;
+      } else if (!isValidDose(value)) {
+        errors.push(issue('STEPS_INVALID', `${sp}.doses.${key}`, doseMessage()));
         valid = false;
       } else if (value > 0) {
         anyDose = true;
@@ -420,6 +426,11 @@ function isIntegerInRange(value, min, max) {
 /** A dose: 0 or more, at most MAX_MG, with at most 3 decimals. */
 function isValidDose(value) {
   return toThousandths(value) !== null && value >= 0 && value <= MAX_MG;
+}
+
+/** The message for a dose that is not valid. */
+function doseMessage() {
+  return `A dose must be a number from 0 to ${MAX_MG} mg, with up to 3 decimals.`;
 }
 
 /** A tablet strength: above 0, at most MAX_MG, with at most 3 decimals. */
